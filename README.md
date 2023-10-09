@@ -7,6 +7,9 @@ It will be written in Python and Rust, with Python used for the server and Rust 
 I would appreciate feedback from anyone to help me achieve a better outcome for this project. Thank you."
 
 
-Server - 길거리의 그냥 돌 
 
-Client - src
+#Server 
+길거리의 그냥 돌 
+
+#Client
+src
