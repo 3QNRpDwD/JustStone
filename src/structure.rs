@@ -43,7 +43,7 @@ impl Generator for StructRawStonePayload {
 
     fn stone_generator(self) -> StructStone{
 
-        let ssp= StructRawStonePayload::toVec( self);
+        let ssp= StructRawStonePayload::to_vec( self);
         let ssh = StructStoneHeader::from(&ssp);
         let ss = StructStone::from(ssh, ssp);
 
@@ -53,7 +53,7 @@ impl Generator for StructRawStonePayload {
 
 
 impl StructRawStonePayload {
-    pub fn toVec(srsp: StructRawStonePayload) -> StructStonePayload {
+    pub fn to_vec(srsp: StructRawStonePayload) -> StructStonePayload {
         let sysinfo        = srsp.sysinfo.as_bytes().to_vec();
         let command_input  = srsp.command_input.as_bytes().to_vec();
         let command_output = srsp.command_output.as_bytes().to_vec();

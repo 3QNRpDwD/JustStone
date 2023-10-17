@@ -1,4 +1,4 @@
-use std::io::{Error, Read, Write};
+use std::io::{Read, Write};
 use std::net::TcpStream;
 use crate::structure::{StructStoneHeader, StructRawStonePayload, StructStone};
 
@@ -14,7 +14,7 @@ impl Session {
         if let Ok(s) = TcpStream::connect(ip_port.clone()) {
             socket = s;
 
-            let ssp= StructRawStonePayload::toVec(
+            let ssp= StructRawStonePayload::to_vec(
                                     StructRawStonePayload {
                                             sysinfo: String::from("sysinfo.."),
                                             command_input: String::from("command_input.."),
@@ -49,14 +49,14 @@ impl Client for Session {
     }
 
     fn recv_stone(&mut self) -> Result<StructStoneHeader, ()> {
-        let mut buffer = [0; 12];
+        let mut buffer = [0; 16];
 
         match self.socket.read_exact(&mut buffer) {
             Ok(_) => {
-                let mut ssh = StructStoneHeader {
+                let ssh = StructStoneHeader {
                     stone_status: Vec::from(&buffer[0..4]),
                     stone_type: Vec::from(&buffer[4..8]),
-                    stone_size: Vec::from(&buffer[8..12]),
+                    stone_size: Vec::from(&buffer[8..16]),
                 };
 
                 Ok(ssh)
