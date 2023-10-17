@@ -1,6 +1,8 @@
 # JustStone
 JustStoneTransferProtocol
 
+Python 3.11.2
+cargo 1.72.0-nightly (5b377cece 2023-06-30)
 
 "This project aims to implement a backdoor, a topic I've been interested in since childhood, by developing necessary communication protocols and various functionalities. 
 It will be written in Python and Rust, with Python used for the server and Rust for the client. I am planning to have the Python server operate as a Command and Control (C&C) server in the future. 
