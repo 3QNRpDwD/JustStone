@@ -1,7 +1,10 @@
 # JustStone
 JustStoneTransferProtocol
 
+version info
+
 Python 3.11.2
+
 cargo 1.72.0-nightly (5b377cece 2023-06-30)
 
 "This project aims to implement a backdoor, a topic I've been interested in since childhood, by developing necessary communication protocols and various functionalities. 
