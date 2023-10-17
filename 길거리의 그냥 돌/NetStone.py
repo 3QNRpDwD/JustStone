@@ -2,10 +2,12 @@ import socket
 from StructureStone import *
 
 class StoneTransferProtocol:
-    def __init__( self ):
+    def __init__( self , addr  : str,  port :int, listen : int ):
         self.s = socket.socket()
+        self.soket = self.SetupConnection( addr, port, listen )
+        self.client = self.soket[0]
 
-    def SetupConnection( self, addr: str, port :int, listen : int ):
+    def SetupConnection( self, addr : str, port :int, listen : int ):
 
         self.s.bind( ( addr, port ) )
         self.s.listen( listen )
@@ -24,7 +26,7 @@ class StoneTransferProtocol:
 
         try:
             print( Stone, "보낸거" )
-            self.c.send( Stone )
+            self.client.send( Stone )
             return self.ReceiveStone()
         
         except Exception as e:
@@ -37,7 +39,7 @@ class StoneTransferProtocol:
 
     def ReceiveStone( self, buffer_size: int = 16 ) -> [ StructStoneHeader, StructStonePayload ]:
 
-        Stone = self.c.recv( buffer_size )
+        Stone = self.client.recv( buffer_size )
 
         if len(Stone) == 16:
             packat = StructStoneHeader( Stone[0:4], Stone[4:8], Stone[8:16] )

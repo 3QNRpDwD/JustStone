@@ -5,9 +5,7 @@ from NetStone import StoneTransferProtocol
 
 def Run():
 
-    STP = StoneTransferProtocol()
-
-    c, addr = STP.SetupConnection( '127.0.0.1', 6974, 0 )
+    STP = StoneTransferProtocol( '127.0.0.1', 6974, 0 )
 
     req = STP.ReceiveStone()
 
