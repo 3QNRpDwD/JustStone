@@ -16,7 +16,6 @@ I would appreciate feedback from anyone to help me achieve a better outcome for 
 src
 
 # Version Info
-Version Info
 
 Python 3.11.2
 
