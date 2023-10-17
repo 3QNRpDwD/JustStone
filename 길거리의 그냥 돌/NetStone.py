@@ -2,6 +2,7 @@ import socket
 from StructureStone import *
 
 class StoneTransferProtocol:
+
     def __init__( self , addr  : str,  port :int, listen : int ):
         self.s = socket.socket()
         self.soket = self.SetupConnection( addr, port, listen )
@@ -18,14 +19,14 @@ class StoneTransferProtocol:
         pass
 
 
-    def ParsingPacket( self, Packet: [ StructStoneHeader, StructStonePayload ] ) -> StructStonePayload:
-        Packet = Packet[1].decode().split("..")
-        return StructStonePayload(*Packet)
+    def ParsingPacket( self, Packet: StructStone ) -> StructRawStonePayload:
+        Packet = Packet.payload.decode().split("..")
+        return StructRawStonePayload(*Packet)
 
     def SendStone( self, Stone ):
 
         try:
-            print( Stone, "보낸거" )
+            print( f"보낸거 : { Stone }")
             self.client.send( Stone )
             return self.ReceiveStone()
         
@@ -37,17 +38,20 @@ class StoneTransferProtocol:
 
             self.s.close()
 
-    def ReceiveStone( self, buffer_size: int = 16 ) -> [ StructStoneHeader, StructStonePayload ]:
+    def ReceiveStone( self, buffer_size: int = 16 ) -> StructStone:
 
-        Stone = self.client.recv( buffer_size )
+        Packet = self.client.recv( buffer_size )
 
-        if len(Stone) == 16:
-            packat = StructStoneHeader( Stone[0:4], Stone[4:8], Stone[8:16] )
-
-            if packat.StoneSize:
-                return packat, self.ParsingPacket( self.ReceiveStone( struct.unpack('Q', packat.StoneSize )[0] ) )
-            
-            return packat, None
+        if len(Packet) != 16:
+            return StructStone( None, Packet )
         
-        return None, Stone
+        Header = StructStoneHeader( Packet[0:4], Packet[4:8], Packet[8:16] )
+        Payload = self.ParsingPacket( self.ReceiveStone( struct.unpack('Q', Header.StoneSize )[0] ) )
+
+        if Header.StoneSize:
+            return StructStone( Header, Payload )
+        
+        return StructStone( Header, None )
+        
+        
             

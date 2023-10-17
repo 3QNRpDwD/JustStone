@@ -44,7 +44,12 @@ class StructStone:
 
     def __post_init__(self):
 
-        self.stone = self.header + self.payload
+        if self.header is not None:
+            self.stone = self.header
+        elif self.payload is not None:
+            self.stone = self.payload
+        else:
+            self.stone = self.header + self.payload
 
 
 class ConstructStonePayload:

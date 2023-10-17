@@ -9,7 +9,7 @@ def Run():
 
     req = STP.ReceiveStone()
 
-    print(req)
+    print( f"받은거 : { req.header } \n받은거 : { req.payload }" )
 
     SSP = ConstructStonePayload.from_( StructRawStonePayload( "sysinfo..", "command_input..", "command_output..", "stone_chain.." ) )
     SSH = ConstructStoneHeader.from_( SSP )
