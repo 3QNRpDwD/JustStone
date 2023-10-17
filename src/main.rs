@@ -14,8 +14,7 @@ fn main() {
     match client.recv_stone() {
         Ok(ssh) => {
             // Access ssh.stone_status, ssh.stone_type, and ssh.stone_size here
-            println!("받은거");
-            println!("{:?}", ssh);
+            println!("받은거 : {:?}", ssh);
         },
         Err(_) => {
             // Handle the error case

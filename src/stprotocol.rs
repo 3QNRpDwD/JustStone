@@ -1,6 +1,6 @@
 use std::io::{Read, Write};
 use std::net::TcpStream;
-use crate::structure::{StructStoneHeader, StructRawStonePayload, StructStone};
+use crate::structure::{StructStoneHeader, StructRawStonePayload, StructStone, StructStonePayload};
 
 pub struct Session {
     ip_port: String,
@@ -21,10 +21,9 @@ impl Session {
                                             command_output: String::from("command_output.."),
                                             stone_chain: String::from("stone_chain.."),
                                     });
-            println!("보낸거");
-            println!("{:?}", ssp);
+            println!("보낸거 : {:?}", ssp);
             let ssh = StructStoneHeader::from(&ssp);
-            println!("{:?}", ssh);
+            println!("보낸거 : {:?}", ssh);
             let stone    = StructStone::from(ssh, ssp);
 
             socket.write_all(&stone.stone).expect("TODO: panic message");
@@ -40,6 +39,8 @@ pub trait Client {
     fn send_stone(&mut self, stone: &[u8]) -> Result<(), std::io::Error>;
     fn recv_stone(&mut self) ->  Result<StructStoneHeader, ()>;
 
+    // fn parsing_packet(&mut self, Packet : StructStone) -> StructStonePayload;
+
 }
 
 impl Client for Session {
@@ -47,6 +48,10 @@ impl Client for Session {
         self.socket.write_all(stone)?;
         Ok(())
     }
+
+    // fn parsing_packet(&mut self, Packet : StructStone) -> StructStonePayload {
+    //     todo!()
+    // }
 
     fn recv_stone(&mut self) -> Result<StructStoneHeader, ()> {
         let mut buffer = [0; 16];
