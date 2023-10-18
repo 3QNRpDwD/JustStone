@@ -1,3 +1,4 @@
+use core::slice::SlicePattern;
 use std::io::{Read, Write};
 use std::net::TcpStream;
 use crate::structure::{StructStoneHeader, StructRawStonePayload, StructStone, StructStonePayload};
@@ -37,9 +38,8 @@ impl Session {
 
 pub trait Client {
     fn send_stone(&mut self, stone: &[u8]) -> Result<(), std::io::Error>;
-    fn recv_stone(&mut self) ->  Result<StructStoneHeader, ()>;
-
-    // fn parsing_packet(&mut self, Packet : StructStone) -> StructStonePayload;
+    fn parsing_packet(&mut self, packet: StructStone) -> StructStonePayload;
+    fn recv_stone(&mut self) ->  Result<StructStone, ()>;
 
 }
 
@@ -49,22 +49,57 @@ impl Client for Session {
         Ok(())
     }
 
-    // fn parsing_packet(&mut self, Packet : StructStone) -> StructStonePayload {
-    //     todo!()
-    // }
+    fn parsing_packet(&mut self, packet: StructStone) -> StructStonePayload {
 
-    fn recv_stone(&mut self) -> Result<StructStoneHeader, ()> {
-        let mut buffer = [0; 16];
+        println!("{}", u32::from_ne_bytes(packet.header.stone_size[8..12].try_into().unwrap()));
+
+        StructStonePayload{
+            sysinfo: vec![],
+            command_input: vec![],
+            command_output: vec![],
+            stone_chain: vec![],
+        }
+    }
+
+    fn recv_stone(&mut self) -> Result<StructStone, ()> {
+        let mut buffer = [0; 12];
 
         match self.socket.read_exact(&mut buffer) {
             Ok(_) => {
-                let ssh = StructStoneHeader {
-                    stone_status: Vec::from(&buffer[0..4]),
-                    stone_type: Vec::from(&buffer[4..8]),
-                    stone_size: Vec::from(&buffer[8..16]),
-                };
 
-                Ok(ssh)
+                if buffer.len() == 12 {
+
+                    let header = StructStoneHeader {
+                        stone_status: Vec::from(&buffer[0..4]),
+                        stone_type: Vec::from(&buffer[4..8]),
+                        stone_size: Vec::from(&buffer[8..12]),
+                    };
+
+                    let temp_payload = StructStonePayload {
+                        sysinfo: vec![],
+                        command_input: vec![],
+                        command_output: vec![],
+                        stone_chain: vec![],
+                    };
+
+                    Ok(StructStone::from(header, temp_payload))
+                } else {
+
+                    let temp_header = StructStoneHeader {
+                        stone_status: vec![],
+                        stone_type: vec![],
+                        stone_size: vec![],
+                    };
+
+                    let payload = StructStonePayload {
+                        sysinfo: vec![],
+                        command_input: vec![],
+                        command_output: vec![],
+                        stone_chain: vec![],
+                    };
+
+                    Ok(StructStone::from(temp_header, payload))
+                }
             },
             Err(_) => Err(())
         }

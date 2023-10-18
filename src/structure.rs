@@ -2,37 +2,37 @@
 
 pub struct  StoneChain {
     pub previous_stone_hash: Vec<u8>,
-    pub stone_hash: Vec<u8>,
-    pub stonetree_hash: Vec<u8>,
-    pub timestamp: Vec<u8>,
-    pub transaction_list: Vec<u8>
+    pub stone_hash:          Vec<u8>,
+    pub stonetree_hash:      Vec<u8>,
+    pub timestamp:           Vec<u8>,
+    pub transaction_list:    Vec<u8>
 }
 pub struct StructRawStonePayload {
-    pub sysinfo: String,
-    pub command_input: String,
+    pub sysinfo:        String,
+    pub command_input:  String,
     pub command_output: String,
-    pub stone_chain: String,
+    pub stone_chain:    String,
 }
 #[derive(Debug)]
 pub struct StructStonePayload {
-    pub sysinfo: Vec<u8>,
-    pub command_input: Vec<u8>,
+    pub sysinfo:        Vec<u8>,
+    pub command_input:  Vec<u8>,
     pub command_output: Vec<u8>,
-    pub stone_chain: Vec<u8>
+    pub stone_chain:    Vec<u8>
     // pub stone_chain: StoneChain,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StructStoneHeader {
     pub stone_status: Vec<u8>,
-    pub stone_type: Vec<u8>,
-    pub stone_size: Vec<u8>,
+    pub stone_type:   Vec<u8>,
+    pub stone_size:   Vec<u8>,
 }
 #[derive(Debug)]
 pub struct StructStone {
-    pub header: StructStoneHeader,
+    pub header:  StructStoneHeader,
     pub payload: StructStonePayload,
-    pub stone: Vec<u8>
+    pub stone:   Vec<u8>
 }
 
 pub trait Generator {
@@ -84,7 +84,7 @@ impl StructStoneHeader {
             [3, 0, 0, 0].to_vec()
         };
 
-        let stone_size = (payload.sysinfo.len() + payload.command_input.len() + payload.command_output.len()).to_le_bytes().to_vec();
+        let stone_size = (payload.sysinfo.len() + payload.command_input.len() + payload.command_output.len()).to_le_bytes()[0..4].to_vec();
         let stone_status = 0u32.to_le_bytes().to_vec();
 
         StructStoneHeader {

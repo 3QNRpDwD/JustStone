@@ -1,4 +1,7 @@
 #![feature(let_chains)]
+#![feature(slice_pattern)]
+
+extern crate core;
 
 mod exploit;
 mod structure;
