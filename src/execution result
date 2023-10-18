@@ -1,3 +1,4 @@
+보낸거 : StructStoneHeader { stone_status: [0, 0, 0, 0], stone_type: [2, 0, 0, 0], stone_size: [40, 0, 0, 0] } 
 보낸거 : StructStonePayload { sysinfo: [115, 121, 115, 105, 110, 102, 111, 46, 46], command_input: [99, 111, 109, 109, 97, 110, 100, 95, 105, 110, 112, 117, 116, 46, 46], command_output: [99, 111, 109, 109, 97, 110, 100, 95, 111, 117, 116, 112, 117, 116, 46, 46], stone_chain: [] }
-보낸거 : StructStoneHeader { stone_status: [0, 0, 0, 0], stone_type: [2, 0, 0, 0], stone_size: [40, 0, 0, 0] }
-받은거 : StructStone { header: StructStoneHeader { stone_status: [0, 0, 0, 0], stone_type: [2, 0, 0, 0], stone_size: [53, 0, 0, 0] }, payload: StructStonePayload { sysinfo: [], command_input: [], command_output: [], stone_chain: [] }, stone: [0, 0, 0, 0, 2, 0, 0, 0, 53, 0, 0, 0] }
+받은거 : StructStoneHeader { stone_status: [0, 0, 0, 0], stone_type: [2, 0, 0, 0], stone_size: [53, 0, 0, 0] } 
+받은거 : StructStonePayload { sysinfo: [], command_input: [], command_output: [], stone_chain: [] }
