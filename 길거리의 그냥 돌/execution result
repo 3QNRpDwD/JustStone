@@ -1,3 +1,4 @@
-받은거 : StructStoneHeader(StoneStatus=b'\x00\x00\x00\x00', StoneType=b'\x02\x00\x00\x00', StoneSize=b'(\x00\x00\x00\x00\x00\x00\x00') 
+받은거 : StructStoneHeader(StoneStatus=b'\x00\x00\x00\x00', StoneType=b'\x02\x00\x00\x00', StoneSize=b'(\x00\x00\x00') 
 받은거 : StructRawStonePayload(sysinfo='sysinfo', command_input='command_input', command_output='command_output', stone_chain='')
-보낸거 : b'\x00\x00\x00\x00\x02\x00\x00\x005\x00\x00\x00\x00\x00\x00\x00'
+보낸거 : b'\x00\x00\x00\x00\x02\x00\x00\x005\x00\x00\x00'
+보낸거 : b'sysinfo..command_input..command_output..stone_chain..'
