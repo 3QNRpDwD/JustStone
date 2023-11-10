@@ -32,31 +32,33 @@ pub struct StructStoneHeader {
 pub struct StructStone {
     pub header:  StructStoneHeader,
     pub payload: StructStonePayload,
-    pub stone:   Vec<u8>
+    pub stone:  Vec<u8>
 }
 
 pub trait Generator {
-    fn stone_generator(self) -> StructStone;
+    fn generator(self) -> StructStone;
 }
 
 impl Generator for StructRawStonePayload {
 
-    fn stone_generator(self) -> StructStone{
+    fn generator(self) -> StructStone{
 
-        let ssp= StructRawStonePayload::to_vec( self);
+        let ssp= StructRawStonePayload::to_vec( &self);
         let ssh = StructStoneHeader::from(&ssp);
-        let ss = StructStone::from(ssh, ssp);
 
-        ss
+        println!("보낸거 : {:?} \n보낸거 : {:?}", ssh, ssp);
+
+        StructStone::from(ssh, ssp)
+
     }
 }
 
 
 impl StructRawStonePayload {
-    pub fn to_vec(srsp: StructRawStonePayload) -> StructStonePayload {
-        let sysinfo        = srsp.sysinfo.as_bytes().to_vec();
-        let command_input  = srsp.command_input.as_bytes().to_vec();
-        let command_output = srsp.command_output.as_bytes().to_vec();
+    pub fn to_vec(&self) ->StructStonePayload {
+        let sysinfo        = self.sysinfo.as_bytes().to_vec();
+        let command_input  = self.command_input.as_bytes().to_vec();
+        let command_output = self.command_output.as_bytes().to_vec();
 
         StructStonePayload {
             sysinfo,
@@ -93,10 +95,39 @@ impl StructStoneHeader {
             stone_size,
         }
     }
+    pub fn default() -> StructStoneHeader{
+        StructStoneHeader {
+            stone_status: vec![],
+            stone_type: vec![],
+            stone_size: vec![],
+        }
+    }
 }
 
+    impl  StructStonePayload {
+        pub fn from(packet: String) -> StructStonePayload {
+        todo!()
+    }
+
+        pub fn default() -> StructStonePayload {
+            StructStonePayload {
+                sysinfo: vec![],
+                command_input: vec![],
+                command_output: vec![],
+                stone_chain: vec![],
+            }
+        }
+}
 
 impl StructStone {
+    pub fn new(header: StructStoneHeader, payload: StructStonePayload, stone: Vec<u8>) -> StructStone  {
+        StructStone  {
+            header,
+            payload,
+            stone
+        }
+    }
+
     pub fn from(header: StructStoneHeader, payload: StructStonePayload) -> StructStone {
         let mut stone: Vec<u8> = Vec::new();
         stone.extend(&header.stone_status);
@@ -108,11 +139,11 @@ impl StructStone {
         stone.extend(&payload.stone_chain);
 
 
-        StructStone {
-            header,
-            payload,
-            stone
-        }
+        StructStone::new(header, payload, stone)
+    }
+
+    pub  fn default() -> StructStone{
+        StructStone::new(StructStoneHeader::default(), StructStonePayload::default(), Vec::new())
     }
 }
 

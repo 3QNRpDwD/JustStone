@@ -1,7 +1,3 @@
-#![feature(let_chains)]
-#![feature(slice_pattern)]
-
-extern crate core;
 
 mod exploit;
 mod structure;
@@ -12,16 +8,18 @@ use structure::*;
 use stprotocol::{ Session, Client };
 
 fn main() {
-    let mut client = Session::new("127.0.0.1:6974".to_string());
 
-    match client.recv_stone() {
-        Ok(ssh) => {
-            // Access ssh.stone_status, ssh.stone_type, and ssh.stone_size here
-            println!("받은거 : {:?}", ssh);
-        },
-        Err(_) => {
-            // Handle the error case
-            println!("Error receiving stone.");
-        }
-    }
+    let mut client = Session::new("127.0.0.1:6974".to_string());
+    client.recv();
+
+    // match client.recv() {
+    //     Ok(ssh) => {
+    //         // Access ssh.stone_status, ssh.stone_type, and ssh.stone_size here
+    //         println!("받은거 : {:?} \n받은거 : {:?}", ssh.header, ssh.payload);
+    //     },
+    //     Err(_) => {
+    //         // Handle the error case
+    //         println!("Error receiving stone.");
+    //     }
+    // }
 }
