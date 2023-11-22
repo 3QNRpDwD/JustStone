@@ -1,4 +1,4 @@
-
+use std::io::{BufRead, Split};
 
 pub struct  StoneChain {
     pub previous_stone_hash: Vec<u8>,
@@ -77,24 +77,33 @@ impl StructRawStonePayload {
 }
 
 impl StructStoneHeader {
-    pub fn from(payload: &StructStonePayload) -> StructStoneHeader {
-        let stone_type = if !payload.sysinfo.is_empty() && payload.command_output.is_empty() && payload.stone_chain.is_empty() {
-            [1, 0, 0, 0].to_vec()
-        } else if !payload.command_output.is_empty() {
-            [2, 0, 0, 0].to_vec()
-        } else {
-            [3, 0, 0, 0].to_vec()
-        };
-
-        let stone_size = (payload.sysinfo.len() + payload.command_input.len() + payload.command_output.len()).to_le_bytes()[0..4].to_vec();
-        let stone_status = 0u32.to_le_bytes().to_vec();
-
-        StructStoneHeader {
-            stone_status,
-            stone_type ,
-            stone_size,
+        pub fn load(packet: Vec<u8>) -> StructStoneHeader {
+            StructStoneHeader {
+                stone_status: Vec::from(&packet[0..4]),
+                stone_type: Vec::from(&packet[4..8]),
+                stone_size: Vec::from(&packet[8..12]),
+            }
         }
-    }
+
+        pub fn from(payload: &StructStonePayload) -> StructStoneHeader {
+            let stone_type = if !payload.sysinfo.is_empty() && payload.command_output.is_empty() && payload.stone_chain.is_empty() {
+                [1, 0, 0, 0].to_vec()
+            } else if !payload.command_output.is_empty() {
+                [2, 0, 0, 0].to_vec()
+            } else {
+                [3, 0, 0, 0].to_vec()
+            };
+
+            let stone_size = (payload.sysinfo.len() + payload.command_input.len() + payload.command_output.len()).to_le_bytes()[0..4].to_vec();
+            let stone_status = 0u32.to_le_bytes().to_vec();
+
+            StructStoneHeader {
+                stone_status,
+                stone_type ,
+                stone_size,
+            }
+        }
+
     pub fn default() -> StructStoneHeader{
         StructStoneHeader {
             stone_status: vec![],
@@ -105,8 +114,15 @@ impl StructStoneHeader {
 }
 
     impl  StructStonePayload {
-        pub fn from(packet: String) -> StructStonePayload {
-        todo!()
+        pub fn from(packet: Vec<u8>) -> StructStonePayload {
+            let split_packet: Split<&mut Vec<u8>> = packet.split(46);
+
+            StructStonePayload {
+                sysinfo: split_packet[0],
+                command_input: split_packet[1],
+                command_output: split_packet[2],
+                stone_chain: split_packet[3],
+            }
     }
 
         pub fn default() -> StructStonePayload {
@@ -120,14 +136,6 @@ impl StructStoneHeader {
 }
 
 impl StructStone {
-    pub fn new(header: StructStoneHeader, payload: StructStonePayload, stone: Vec<u8>) -> StructStone  {
-        StructStone  {
-            header,
-            payload,
-            stone
-        }
-    }
-
     pub fn from(header: StructStoneHeader, payload: StructStonePayload) -> StructStone {
         let mut stone: Vec<u8> = Vec::new();
         stone.extend(&header.stone_status);

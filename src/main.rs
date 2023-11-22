@@ -10,7 +10,10 @@ use stprotocol::{ Session, Client };
 fn main() {
 
     let mut client = Session::new("127.0.0.1:6974".to_string());
-    client.recv();
+    let mut buffer = StructStone::default();
+    buffer = client.receiving(buffer);
+
+    println!("{:?}", buffer)
 
     // match client.recv() {
     //     Ok(ssh) => {

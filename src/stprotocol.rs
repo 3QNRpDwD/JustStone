@@ -6,7 +6,6 @@ use crate::structure::{StructStoneHeader, StructRawStonePayload, StructStone, St
 pub struct Session {
     ip_port: String,
     socket: TcpStream,
-    packet: StructStone,
 }
 
 impl Session {
@@ -27,7 +26,7 @@ impl Session {
             socket.write_all(&packet.stone).expect("TODO: panic message");
 
 
-            Session { ip_port, socket , packet }
+            Session { ip_port, socket }
         } else {
             Self::new(ip_port)
         }
@@ -40,10 +39,11 @@ impl Session {
 
 pub trait Client {
     fn send_stone(&mut self, stone: &[u8]) -> Result<(), std::io::Error>;
-    fn parsing_packet(&mut self, packet: Vec<u8>) -> StructStonePayload;
     fn detect_header_type(&mut self, header: Vec<u8>) -> bool;
-    fn receiving(&mut self) -> StructStone;
+    fn get_payload_size(&mut self, header: StructStoneHeader) -> usize;
     fn recv(&mut self, buffer_size: usize) -> Vec<u8>;
+    fn receiving(&mut self, buffer: StructStone) -> StructStone;
+
 }
 
 impl Client for Session {
@@ -52,19 +52,16 @@ impl Client for Session {
         Ok(())
     }
 
-    fn parsing_packet(&mut self, packet: Vec<u8>) -> StructStonePayload {
-        let sting_packet = String::from_utf8_lossy(&packet).to_string();
-        let split_packet = sting_packet.split("..");
-
-        println!("{:?}", split_packet);
-
-        StructStonePayload::default()
-
-    }
-
     fn detect_header_type(&mut self, header: Vec<u8>) -> bool {
         todo!()
     }
+
+    fn get_payload_size(&mut self, header: StructStoneHeader) -> usize {
+        let length_bytes: &[u8] = &header.stone_size;
+        let length = u32::from_le_bytes([length_bytes[0], length_bytes[1], length_bytes[2], length_bytes[3]]);
+        return length as usize
+    }
+
     fn recv(&mut self, buffer_size: usize) -> Vec<u8> {
 
         let mut buffer : Vec<u8> = vec![0; buffer_size];
@@ -77,27 +74,19 @@ impl Client for Session {
         }
     }
 
-    fn receiving(&mut self) -> StructStone {
+    fn receiving(&mut self, mut buffer: StructStone) -> StructStone {
         let mut header = StructStoneHeader::default();
-        let packet = self.recv(12);
+        let mut payload = StructStonePayload::default();
+        let mut packet: Vec<u8> = Vec::new();
 
-        if packet {
-                header = StructStoneHeader {
-                    stone_status: Vec::from(&buffer[0..4]),
-                    stone_type: Vec::from(&buffer[4..8]),
-                    stone_size: Vec::from(&buffer[8..12]),
-                };
-                self.packet = StructStone::new(header.clone(), StructStonePayload::default(), Vec::new());
-                self.recv_payload();
-            }
+        if buffer.header == header && buffer.payload == payload {
+            header = StructStoneHeader::load(self.recv(12));
+            return self.receiving(StructStone::from(header, payload))
+        }
 
-        header
-        let length_bytes: &[u8] = &self.packet.header.stone_size;
-        let length = u32::from_le_bytes([length_bytes[0], length_bytes[1], length_bytes[2], length_bytes[3]]);
-        let mut buffer : Vec<u8> = vec![0; length as usize];
-        println!("{:?}", buffer);
-
-        StructStone::default()
+        packet = self.recv(self.get_payload_size(buffer.header));
+        payload = self.parsing_packet(packet);
+        return StructStone::from(header, payload)
     }
 }
 
